@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>YPO Member Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root {
+  --bg: #F8EFED; --surface: #FFFFFF; --ink: #1F1B1B; --muted: #6E6262; --line: #DCC6C2;
+  --accent: #A9485D; --accent-ink: #FFFFFF; --soft: #F1DEDA; --rec: #B3261E;
+  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1C1718; --surface: #262021; --ink: #F4EAE8; --muted: #BBA9A7; --line: #43383A;
+    --accent: #E08A9C; --accent-ink: #1C1718; --soft: #33292B; --rec: #F2877F;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1C1718; --surface: #262021; --ink: #F4EAE8; --muted: #BBA9A7; --line: #43383A;
+  --accent: #E08A9C; --accent-ink: #1C1718; --soft: #33292B; --rec: #F2877F;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 19px; line-height: 1.5; }
+.wrap { max-width: 620px; margin: 0 auto; padding-inline: 20px; padding-block: 16px 64px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); }
+.tag { letter-spacing: .08em; text-transform: uppercase; font-weight: 700; font-size: 12px; color: var(--accent); }
+.bar { height: 4px; background: var(--line); border-radius: 2px; margin-block: 10px 28px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+h1, h2 { font-family: var(--serif); font-weight: 400; line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: 40px; }
+h2 { font-size: 30px; }
+p { margin: 0; }
+.lead { color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 20px; }
+.qnum { font-size: 14px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+.hint { font-size: 16px; color: var(--muted); }
+.note { background: var(--soft); border-radius: 10px; padding: 14px 16px; font-size: 16px; color: var(--ink); }
+.btn { font: inherit; font-weight: 600; min-height: 56px; padding: 12px 24px; border-radius: 28px; border: 2px solid var(--accent); cursor: pointer; background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn:focus-visible, .opt:focus-visible, .link:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { font: inherit; text-align: left; min-height: 56px; padding: 12px 18px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: flex; align-items: center; gap: 14px; }
+.opt .box { flex: none; width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--muted); display: grid; place-items: center; font-size: 15px; color: var(--accent-ink); }
+.opt.single .box { border-radius: 50%; }
+.opt[aria-pressed="true"] { border-color: var(--accent); }
+.opt[aria-pressed="true"] .box { background: var(--accent); border-color: var(--accent); }
+.voice { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.recbtn { font: inherit; font-weight: 700; display: inline-flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 28px 12px 18px; border-radius: 32px; border: none; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.recbtn .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-ink); }
+.recbtn.on { background: var(--rec); }
+.recbtn.on .dot { border-radius: 4px; }
+.timer { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 16px; }
+.link { font: inherit; font-size: 16px; background: none; border: none; color: var(--accent); text-decoration: underline; cursor: pointer; padding: 4px 0; }
+textarea { font: inherit; width: 100%; min-height: 130px; padding: 14px; border-radius: 10px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); resize: vertical; }
+audio { width: 100%; }
+.story { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px 22px 8px; max-height: 58vh; overflow-y: auto; }
+.story p { margin-bottom: 16px; font-family: var(--serif); font-size: 20px; line-height: 1.55; }
+.story b { font-family: var(--sans); font-size: 15px; letter-spacing: .04em; color: var(--accent); margin-right: 6px; }
+.story .rules { font-family: var(--sans); font-size: 17px; background: var(--soft); padding: 14px; border-radius: 10px; }
+.recap dt { font-size: 15px; color: var(--muted); margin-top: 14px; }
+.recap dd { margin: 2px 0 0; }
+details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+@media (max-width: 420px) { h1 { font-size: 34px; } h2 { font-size: 26px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top"><span class="tag">AI to Simplify Your Life</span><span id="step">About 15 minutes</span></div>
+  <div class="bar" aria-hidden="true"><i id="progress"></i></div>
+  <main id="screen" aria-live="polite"></main>
+</div>
+
+<script>
+const HELEN = [
+  ["", "Helen is 75. She sold her company eleven years ago. Now she sits on two boards, chairs her family foundation, and has four grandchildren, a husband named Tom, a house in Atherton and a cabin at Tahoe. She's been in YPO for 34 years."],
+  ["6:40 am", "Helen makes coffee. She doesn't pick up her phone. She says, \"Morning. What do I need to know?\" The assistant runs on a small box in her study, and it has been working overnight. It answers in three sentences: \"You slept well, and your heart rate variability is back to normal after last week's cold. You have 61 new emails. Four need you, and I've drafted replies to three of them. Your 2 pm board call moved to 3, and I've already shifted your walk with Susan.\" It doesn't mention the other 57 emails. It filed them, unsubscribed her from two newsletters she never opens, and put the rest into a summary she can look at if she wants to."],
+  ["7:15 am", "On her walk she asks, \"Anything in the portfolio I should think about?\" The assistant has read her statements from three brokerages. It says one position has grown to 18% of her holdings, past the 15% limit she set last year, and that the foundation's quarterly distribution is due in three weeks. \"Want me to put both on your call with David on Thursday?\" She says yes. Nothing moves until she and her advisor decide."],
+  ["8:30 am", "The fourth email is her son asking whether they can bring the kids to Tahoe over spring break. The assistant didn't draft a reply, because this is Helen's to answer. It has checked the calendar: the cabin is free that week, and the deck repair finishes the Friday before. Helen writes back herself, two lines."],
+  ["9:00 am", "Board prep. The packet for the 3 pm call is 140 pages. She asks, \"What are they going to ask me to approve, and what should I push on?\" The assistant gives her three issues, and the page for each. It notes that the CFO's projections assume a growth rate the company hasn't hit in six quarters. She reads those 20 pages properly and skips the rest."],
+  ["10:30 am", "This is the part of the day she loves. Helen has been writing a family history for her grandchildren, mostly by talking. She tells the story of her father's hardware store in Fresno. The assistant transcribes it, matches it to three photos from 1961 in her library, and points out that her brother's version, in an email from 2019, has a different year for the fire. \"Want me to ask him?\" She laughs and says she'll call him herself."],
+  ["12:00 pm", "Lunch with Tom, planning their 50th anniversary trip. Over the past month the assistant has collected everything they've mentioned: Tom wants the Dolomites, Helen wants no more than two hotel changes, neither wants more than three hours in a car on any day. They pick one of two draft itineraries over lunch. It holds the rooms and waits for their approval before paying."],
+  ["1:30 pm", "The Tahoe contractor's invoice is 12% over the quote. The assistant pulls up the quote and the change order Tom approved, finds 4% with no explanation, and drafts a polite question. Helen reads it and sends it. Separately, it has reordered the coffee they like and a household prescription, and renewed the cabin's insurance at the same rate, all under standing rules she approved months ago."],
+  ["3:00 pm", "The board call. With the board's permission, the assistant keeps notes, then sends Helen the two things she committed to and puts them on her calendar."],
+  ["4:30 pm", "Her granddaughter Maya has her first piano recital on Saturday. Last week Helen asked for \"something she'll keep, not something she'll outgrow.\" Three options are ready. She picks a vintage metronome. It arrives Friday."],
+  ["5:00 pm", "Her quarterly lab results arrive. The assistant reads them against her last eight panels and her wearable data. \"Your A1c is up slightly for the second quarter in a row. It's still normal, but it's a trend. Want me to add it to your questions for Dr. Patel on the 28th?\" It doesn't diagnose. It notices the pattern and keeps the question on her list."],
+  ["7:00 pm", "Dinner for six at home. The assistant planned the menu around one guest's shellfish allergy, which it remembered from a dinner two years ago, and the wines already in the cellar. The place cards and the note she reads before the toast were written by Helen, with a little help."],
+  ["10:00 pm", "Helen has spent about 40 minutes on a screen today. A year ago it was closer to three hours. What changed is what she no longer has to do: open the inbox, check the calendar, log into the bank, chase the contractor, search for the photo."]
+];
+const RULES = "The rules Helen's assistant follows: It drafts; Helen decides. It never sends anything personal or moves money on its own. Standing rules cover only routine things she approved in advance. Health and money are read and flagged, never acted on; decisions go to her doctor and advisor.";
+
+const STEPS = [
+  { type: "welcome" },
+  { type: "intro" },
+  { id: "q1", type: "multi", n: 1, q: "Where has AI actually been useful to you so far?", hint: "Tap any that apply.",
+    options: ["Looking things up", "Writing emails or messages", "Travel planning", "Photos", "Health questions", "A hobby or project", "Documents and finances", "Nowhere yet", "I haven't tried it"] },
+  { id: "q2", type: "single", n: 2, q: "If AI could take one thing off your plate, what would help most?", hint: "Tap one.",
+    options: ["My inbox and calendar", "Staying in touch with family", "Health, mine or someone I look after", "Travel and hobbies", "Paperwork and finances", "Something else"] },
+  { id: "q3", type: "voice", n: 3, q: "Think of a recent time you thought, \"there has to be an easier way to do this.\" What was it?", hint: "Up to 90 seconds.", max: 90 },
+  { type: "story" },
+  { id: "q4", type: "voice", n: 4, q: "What did you like? Which moments in Helen's day would you most want in your own life?", max: 90 },
+  { id: "q5", type: "voice", n: 5, q: "What didn't you like? Anything that felt uncomfortable, unnecessary, or not you?", max: 90 },
+  { id: "q6", type: "single+voice", n: 6, q: "Assuming it's possible, how fast do you want to get there?",
+    options: ["Now", "Within a year", "Eventually", "Not for me"], voicePrompt: "Tell us why, if you like.", max: 60 },
+  { id: "q7", type: "voice", n: 7, q: "What would stop you?", hint: "Privacy, trust, time, cost, not knowing where to start, or anything else.", max: 90 },
+  { id: "q8", type: "single+voice", n: 8, q: "What help would you need?",
+    options: ["Show me and I'll do it", "Set it up with me", "Do it for me"], voicePrompt: "What would that look like?", max: 60 },
+  { id: "q9", type: "single", n: 9, q: "What would you let an assistant see?",
+    options: ["Email and calendar", "Plus shopping and documents", "Plus bank accounts and health records"] },
+  { type: "done" }
+];
+const TOTAL_Q = 9;
+const answers = {};
+let i = 0;
+let micState = "unknown";
+const screen = document.getElementById("screen");
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+
+function progress() {
+  const s = STEPS[i];
+  const done = s.n ? s.n - 1 : (s.type === "done" ? TOTAL_Q : s.type === "story" ? 3 : 0);
+  document.getElementById("progress").style.width = (done / TOTAL_Q * 100) + "%";
+  document.getElementById("step").textContent = s.n ? `Question ${s.n} of ${TOTAL_Q}` : s.type === "story" ? "Helen's day, 5 to 8 minutes" : "About 15 minutes";
+}
+
+function go(d) {
+  stopAll();
+  i = Math.max(0, Math.min(STEPS.length - 1, i + d));
+  render();
+  window.scrollTo({ top: 0 });
+  const h = screen.querySelector("h1, h2");
+  if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+}
+
+function nav(canNext = true, nextLabel = "Next") {
+  const next = el("button", { class: "btn", onclick: () => go(1) }, nextLabel);
+  if (!canNext) next.disabled = true;
+  return { bar: el("div", { class: "nav" }, i > 1 ? el("button", { class: "btn ghost", onclick: () => go(-1) }, "Back") : el("span"), next), next };
+}
+
+function options(step, multi, onChange) {
+  const a = answers[step.id] = answers[step.id] || { choice: multi ? [] : null };
+  const wrap = el("div", { class: "opts", role: "group", "aria-label": step.q });
+  step.options.forEach(o => {
+    const on = multi ? a.choice.includes(o) : a.choice === o;
+    const b = el("button", { class: "opt" + (multi ? "" : " single"), "aria-pressed": String(on), onclick: () => {
+      if (multi) {
+        a.choice = a.choice.includes(o) ? a.choice.filter(x => x !== o) : [...a.choice, o];
+      } else a.choice = o;
+      [...wrap.children].forEach((c, k) => {
+        const val = step.options[k];
+        const p = multi ? a.choice.includes(val) : a.choice === val;
+        c.setAttribute("aria-pressed", String(p)); c.querySelector(".box").textContent = p && multi ? "✓" : "";
+      });
+      onChange && onChange();
+    } }, el("span", { class: "box", "aria-hidden": "true" }, on && multi ? "✓" : ""), el("span", {}, o));
+    wrap.append(b);
+  });
+  return wrap;
+}
+
+let rec = null, tick = null;
+function stopAll() {
+  if (rec && rec.state === "recording") rec.stop();
+  clearInterval(tick);
+  if (window.speechSynthesis) speechSynthesis.cancel();
+}
+
+function voiceBox(step, label) {
+  const a = answers[step.id] = answers[step.id] || {};
+  const box = el("div", { class: "voice" });
+  const status = el("p", { class: "hint" });
+  const player = el("div", { style: "width:100%" });
+  const typeWrap = el("div", { style: "width:100%" });
+  const ta = el("textarea", { id: step.id + "-text", "aria-label": "Type your answer", placeholder: "Type your answer here" });
+  ta.value = a.text || "";
+  ta.addEventListener("input", () => { a.text = ta.value; });
+  typeWrap.append(ta);
+  typeWrap.hidden = !(a.text || micState === "blocked");
+
+  const btn = el("button", { class: "recbtn", onclick: toggle }, el("span", { class: "dot", "aria-hidden": "true" }), el("span", {}, a.audio ? "Record again" : "Tap to answer by voice"));
+  const timer = el("span", { class: "timer" });
+  const typeLink = el("button", { class: "link", onclick: () => { typeWrap.hidden = false; ta.focus(); typeLink.hidden = true; } }, "Prefer to type?");
+  typeLink.hidden = !typeWrap.hidden;
+
+  if (a.audio) player.append(el("audio", { controls: "", src: a.audio }));
+  if (micState === "blocked") { btn.hidden = true; status.textContent = "Voice isn't available on this page, so type your answer below."; }
+
+  async function toggle() {
+    if (rec && rec.state === "recording") { rec.stop(); return; }
+    let stream;
+    try {
+      if (!navigator.mediaDevices || !window.MediaRecorder) throw new Error("unsupported");
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micState = "ok";
+    } catch (e) {
+      micState = "blocked";
+      btn.hidden = true; typeLink.hidden = true; typeWrap.hidden = false;
+      status.textContent = "Voice isn't available here (the microphone was blocked or isn't supported). Type your answer below instead.";
+      ta.focus();
+      return;
+    }
+    const chunks = [];
+    rec = new MediaRecorder(stream);
+    rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+    rec.onstop = () => {
+      clearInterval(tick);
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" });
+      a.audio = URL.createObjectURL(blob); a.seconds = secs;
+      btn.classList.remove("on"); btn.lastChild.textContent = "Record again";
+      timer.textContent = `Recorded ${fmt(secs)}`;
+      player.replaceChildren(el("audio", { controls: "", src: a.audio }));
+    };
+    let secs = 0;
+    rec.start();
+    btn.classList.add("on"); btn.lastChild.textContent = "Tap to stop";
+    timer.textContent = `0:00 of ${fmt(step.max)}`;
+    tick = setInterval(() => { secs++; timer.textContent = `${fmt(secs)} of ${fmt(step.max)}`; if (secs >= step.max) rec.stop(); }, 1000);
+  }
+  box.append(label ? el("p", {}, label) : null, el("div", { class: "row" }, btn, timer), status, player, typeLink, typeWrap);
+  return box;
+}
+const fmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+function storyNode() {
+  const box = el("div", { class: "story", tabindex: "0", "aria-label": "Helen's day" });
+  HELEN.forEach(([t, p]) => box.append(el("p", {}, t ? el("b", {}, t) : null, p)));
+  box.append(el("p", { class: "rules" }, RULES));
+  return box;
+}
+
+function render() {
+  progress();
+  const s = STEPS[i];
+  let body;
+  if (s.type === "welcome") {
+    body = el("div", { class: "stack" },
+      el("h1", {}, "What would you hand over to AI?"),
+      el("p", { class: "lead" }, "A short survey for YPO Gold NorCal members before our learning day on November 18. You'll answer a few questions, hear or read a short story about one day in 2027, and tell us what you think, mostly by voice."),
+      el("p", { class: "note" }, "Only Ganesh's team hears these recordings. We use them to shape the day and share themes, never quotes with names."),
+      el("div", {}, el("button", { class: "btn", onclick: () => go(1) }, "Start")),
+      el("p", { class: "hint" }, "Prototype for the steering committee. Answers stay on this device and nothing is sent."));
+  } else if (s.type === "intro") {
+    const n = nav();
+    body = el("div", { class: "stack" },
+      el("h2", {}, "A welcome from Ganesh"),
+      el("p", { class: "note" }, "Ganesh's 30-second welcome plays here: what this is, how long it takes, and why it matters."),
+      el("p", { class: "lead" }, "First, three quick questions about how you use AI today."), n.bar);
+  } else if (s.type === "multi" || s.type === "single") {
+    const n = nav(false);
+    const check = () => { const c = answers[s.id].choice; n.next.disabled = s.type === "multi" ? !c.length : !c; };
+    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, s.q), s.hint ? el("p", { class: "hint" }, s.hint) : null, options(s, s.type === "multi", check), n.bar);
+    check();
+  } else if (s.type === "voice") {
+    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, s.q), s.hint ? el("p", { class: "hint" }, s.hint) : null, voiceBox(s), nav().bar);
+  } else if (s.type === "single+voice") {
+    const n = nav(false);
+    const check = () => { n.next.disabled = !answers[s.id].choice; };
+    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, s.q), options(s, false, check), voiceBox(s, s.voicePrompt), n.bar);
+    check();
+  } else if (s.type === "story") {
+    const n = nav(true, "I'm done with the story");
+    const canSpeak = "speechSynthesis" in window;
+    const listen = el("button", { class: "btn ghost", onclick: () => {
+      if (speechSynthesis.speaking) { speechSynthesis.cancel(); listen.textContent = "Listen"; return; }
+      const u = new SpeechSynthesisUtterance(HELEN.map(([t, p]) => (t ? t + ". " : "") + p).join(" ") + " " + RULES);
+      u.rate = 0.95; u.onend = () => { listen.textContent = "Listen"; };
+      speechSynthesis.speak(u); listen.textContent = "Stop";
+    } }, "Listen");
+    body = el("div", { class: "stack" },
+      el("p", { class: "qnum" }, "A TUESDAY IN APRIL 2027"),
+      el("h2", {}, "Helen's day"),
+      el("p", { class: "hint" }, "A made-up member. The technology is what's plausible by spring 2027. Listen with the text on screen, or read it yourself."),
+      canSpeak ? el("div", { class: "row" }, listen, el("span", { class: "hint" }, "Ganesh's recorded narration replaces this voice.")) : null,
+      storyNode(), n.bar);
+  } else {
+    const dl = el("dl", { class: "recap" });
+    STEPS.filter(x => x.id).forEach(x => {
+      const a = answers[x.id] || {};
+      const parts = [];
+      if (a.choice) parts.push(Array.isArray(a.choice) ? a.choice.join(", ") : a.choice);
+      if (a.seconds) parts.push(`Voice answer, ${fmt(a.seconds)}`);
+      if (a.text) parts.push(`"${a.text}"`);
+      dl.append(el("dt", {}, `${x.n}. ${x.q}`), el("dd", {}, parts.join(" · ") || "Skipped"));
+    });
+    body = el("div", { class: "stack" },
+      el("h1", {}, "Thank you."),
+      el("p", { class: "lead" }, "Your answers help us plan November 18. We'll let you know which part of the day fits you best."),
+      el("p", { class: "note" }, "Prototype: nothing was sent. In the real survey, answers go to Ganesh's team only."),
+      el("details", {}, el("summary", {}, "See what we captured"), dl),
+      el("div", {}, el("button", { class: "btn ghost", onclick: () => { for (const k in answers) delete answers[k]; i = 0; render(); } }, "Start over")));
+  }
+  screen.replaceChildren(body);
+}
+render();
+</script>
+</body>
+</html>
