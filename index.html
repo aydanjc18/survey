@@ -243,7 +243,8 @@ function voiceBox(step, label) {
     timer.textContent = `0:00 of ${fmt(step.max)}`;
     tick = setInterval(() => { secs++; timer.textContent = `${fmt(secs)} of ${fmt(step.max)}`; if (secs >= step.max) rec.stop(); }, 1000);
   }
-  box.append(label ? el("p", {}, label) : null, el("div", { class: "row" }, btn, timer), status, player, typeLink, typeWrap);
+  if (label) box.append(el("p", {}, label));
+  box.append(el("div", { class: "row" }, btn, timer), status, player, typeLink, typeWrap);
   return box;
 }
 const fmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
