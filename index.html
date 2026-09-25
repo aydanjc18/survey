@@ -105,6 +105,21 @@ const HELEN = [
   ["10:00 pm", "Helen has spent about 40 minutes on a screen today. A year ago it was closer to three hours. What changed is what she no longer has to do: open the inbox, check the calendar, log into the bank, chase the contractor, search for the photo."]
 ];
 const RULES = "The rules Helen's assistant follows: It drafts; Helen decides. It never sends anything personal or moves money on its own. Standing rules cover only routine things she approved in advance. Health and money are read and flagged, never acted on; decisions go to her doctor and advisor.";
+const MARK = [
+  ["", "Mark is 54. He sold his logistics company two years ago. Now he runs a small investment fund with two partners, sits on one board, and coaches his daughter's volleyball team. He and his wife, Lisa, live in Los Gatos with two teenagers. His mother, 82, lives alone in Sacramento."],
+  ["6:15 am", "Mark is training for a half marathon. Before he laces up, he asks, \"What do I need to know?\" His assistant runs on his phone and a secure cloud account. \"Your recovery is low after two short nights, so today's plan is 30 minutes easy instead of intervals. Five emails need you, and I've drafted replies to three. Your 10 am with the Brightline founder moved to 11.\""],
+  ["7:30 am", "His daughter Ava is a high school senior applying to eight colleges. The assistant keeps every deadline, essay prompt and recommendation letter on one list. Two applications are due in three weeks, and one essay hasn't been started. It doesn't write her essays. It puts a 20-minute check-in on the family calendar for Sunday, and Ava accepts it."],
+  ["9:00 am", "A deal memo. The data room has 60 pages of financials. Mark asks, \"What would worry me here?\" The assistant points out that the top two customers are 48% of revenue, and one contract renews in four months. It lists five questions for the 11 am call. Mark adds two of his own."],
+  ["11:45 am", "His mother's blood pressure refill didn't go through, because her insurance changed in January. With her permission, the assistant can see her pharmacy account, so it caught the failed order. It has the pharmacy's number and her new plan ready. Mark calls, and it's sorted in six minutes. It also notices her cardiology appointment next Tuesday has no ride booked, and asks whether to book one or check with his sister."],
+  ["1:30 pm", "Taxes are due April 15. His accountant needs two documents. The assistant found one in his email from February. The other, a K-1 from a fund he invested in, hasn't been issued yet, so it drafted a note to the fund's administrator. Mark reads it and sends it."],
+  ["4:00 pm", "Volleyball practice moved to a different gym. The assistant drafts the message to the team parents with the new address and parking notes. Mark changes one line and sends it."],
+  ["6:30 pm", "Date night. Two weeks ago Lisa mentioned a Basque place in Palo Alto. The assistant held a table for 7:30, near the window, and noted she doesn't eat red meat. It asked Mark before confirming."],
+  ["9:30 pm", "Mark still spends plenty of time on a screen, because the fund is his job. What's gone is the hour a day he used to spend on logistics: finding the document, chasing the refill, rebuilding the family calendar."]
+];
+const PERSONAS = { Helen: { age: 75, story: HELEN }, Mark: { age: 54, story: MARK } };
+const rulesFor = n => `The rules ${n}'s assistant follows: It drafts; ${n} decides. It never sends anything personal or moves money on its own. Standing rules cover only routine things approved in advance. Health and money are read and flagged, never acted on; decisions go to the doctor and the advisor.`;
+const who = () => answers.persona || "Helen";
+const qText = s => s.q.replace("{P}", who());
 
 const STEPS = [
   { type: "welcome" },
@@ -115,18 +130,32 @@ const STEPS = [
     options: ["My inbox and calendar", "Staying in touch with family", "Health, mine or someone I look after", "Travel and hobbies", "Paperwork and finances", "Something else"] },
   { id: "q3", type: "voice", n: 3, q: "Think of a recent time you thought, \"there has to be an easier way to do this.\" What was it?", hint: "Up to 90 seconds.", max: 90 },
   { type: "story" },
-  { id: "q4", type: "voice", n: 4, q: "What did you like? Which moments in Helen's day would you most want in your own life?", max: 90 },
+  { id: "q4", type: "voice", n: 4, q: "What did you like? Which moments in {P}'s day would you most want in your own life?", max: 90 },
   { id: "q5", type: "voice", n: 5, q: "What didn't you like? Anything that felt uncomfortable, unnecessary, or not you?", max: 90 },
   { id: "q6", type: "single+voice", n: 6, q: "Assuming it's possible, how fast do you want to get there?",
     options: ["Now", "Within a year", "Eventually", "Not for me"], voicePrompt: "Tell us why, if you like.", max: 60 },
   { id: "q7", type: "voice", n: 7, q: "What would stop you?", hint: "Privacy, trust, time, cost, not knowing where to start, or anything else.", max: 90 },
   { id: "q8", type: "single+voice", n: 8, q: "What help would you need?",
     options: ["Show me and I'll do it", "Set it up with me", "Do it for me"], voicePrompt: "What would that look like?", max: 60 },
-  { id: "q9", type: "single", n: 9, q: "What would you let an assistant see?",
-    options: ["Email and calendar", "Plus shopping and documents", "Plus bank accounts and health records"] },
+  { id: "q9", type: "single", n: 9, q: "How much would you be comfortable letting an assistant see?", hint: "Pick the furthest you'd go today.",
+    options: ["Only my email and calendar", "Plus documents, shopping and travel", "Plus bank accounts and health records", "All of it, if it stays on a computer in my home"] },
+  { id: "q10", type: "single", n: 10, q: "What do you want to walk away with on November 18?", hint: "This is about what you want, not what you already know. No technical background needed.",
+    options: ["A few everyday tasks off my plate", "An assistant that also helps with money, health and family", "The full setup: my own private assistant at home"] },
   { type: "done" }
 ];
-const TOTAL_Q = 9;
+const TOTAL_Q = 10;
+const BOOTHS = [
+  "Booth 1: email and calendar, simple tools, about $20 to $50 a month.",
+  "Booth 2: more connected. Bank and health data, more agents, and more setup.",
+  "Booth 3: everything, on your own hardware at home with open-source models. About $10,000 to $20,000."
+];
+function suggestedBooth() {
+  const amb = STEPS.find(x => x.id === "q10"), priv = STEPS.find(x => x.id === "q9");
+  const a = amb.options.indexOf((answers.q10 || {}).choice), p = priv.options.indexOf((answers.q9 || {}).choice);
+  if (a < 0 || p < 0) return null;
+  return Math.min(a, [0, 0, 1, 2][p]);
+}
+
 const answers = {};
 let i = 0;
 let micState = "unknown";
@@ -145,7 +174,7 @@ function progress() {
   const s = STEPS[i];
   const done = s.n ? s.n - 1 : (s.type === "done" ? TOTAL_Q : s.type === "story" ? 3 : 0);
   document.getElementById("progress").style.width = (done / TOTAL_Q * 100) + "%";
-  document.getElementById("step").textContent = s.n ? `Question ${s.n} of ${TOTAL_Q}` : s.type === "story" ? "Helen's day, 5 to 8 minutes" : "About 15 minutes";
+  document.getElementById("step").textContent = s.n ? `Question ${s.n} of ${TOTAL_Q}` : s.type === "story" ? "A day in 2027, about 5 minutes" : "About 15 minutes";
 }
 
 function go(d) {
@@ -165,7 +194,7 @@ function nav(canNext = true, nextLabel = "Next") {
 
 function options(step, multi, onChange) {
   const a = answers[step.id] = answers[step.id] || { choice: multi ? [] : null };
-  const wrap = el("div", { class: "opts", role: "group", "aria-label": step.q });
+  const wrap = el("div", { class: "opts", role: "group", "aria-label": qText(step) });
   step.options.forEach(o => {
     const on = multi ? a.choice.includes(o) : a.choice === o;
     const b = el("button", { class: "opt" + (multi ? "" : " single"), "aria-pressed": String(on), onclick: () => {
@@ -250,9 +279,9 @@ function voiceBox(step, label) {
 const fmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 function storyNode() {
-  const box = el("div", { class: "story", tabindex: "0", "aria-label": "Helen's day" });
-  HELEN.forEach(([t, p]) => box.append(el("p", {}, t ? el("b", {}, t) : null, p)));
-  box.append(el("p", { class: "rules" }, RULES));
+  const box = el("div", { class: "story", tabindex: "0", "aria-label": who() + "'s day" });
+  PERSONAS[who()].story.forEach(([t, p]) => box.append(el("p", {}, t ? el("b", {}, t) : null, p)));
+  box.append(el("p", { class: "rules" }, rulesFor(who())));
   return box;
 }
 
@@ -265,6 +294,7 @@ function render() {
       el("h1", {}, "What would you hand over to AI?"),
       el("p", { class: "lead" }, "A short survey for YPO Gold NorCal members before our learning day on November 18. You'll answer a few questions, hear or read a short story about one day in 2027, and tell us what you think, mostly by voice."),
       el("p", { class: "note" }, "Only Ganesh's team hears these recordings. We use them to shape the day and share themes, never quotes with names."),
+      el("p", { class: "hint" }, "There are no wrong answers, and you don't need any technical background. We use your answers to match you with the part of the day that fits how far you want to go."),
       el("div", {}, el("button", { class: "btn", onclick: () => go(1) }, "Start")),
       el("p", { class: "hint" }, "Prototype for the steering committee. Answers stay on this device and nothing is sent."));
   } else if (s.type === "intro") {
@@ -276,28 +306,31 @@ function render() {
   } else if (s.type === "multi" || s.type === "single") {
     const n = nav(false);
     const check = () => { const c = answers[s.id].choice; n.next.disabled = s.type === "multi" ? !c.length : !c; };
-    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, s.q), s.hint ? el("p", { class: "hint" }, s.hint) : null, options(s, s.type === "multi", check), n.bar);
+    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, qText(s)), s.hint ? el("p", { class: "hint" }, s.hint) : null, options(s, s.type === "multi", check), n.bar);
     check();
   } else if (s.type === "voice") {
-    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, s.q), s.hint ? el("p", { class: "hint" }, s.hint) : null, voiceBox(s), nav().bar);
+    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, qText(s)), s.hint ? el("p", { class: "hint" }, s.hint) : null, voiceBox(s), nav().bar);
   } else if (s.type === "single+voice") {
     const n = nav(false);
     const check = () => { n.next.disabled = !answers[s.id].choice; };
-    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, s.q), options(s, false, check), voiceBox(s, s.voicePrompt), n.bar);
+    body = el("div", { class: "stack" }, el("p", { class: "qnum" }, `QUESTION ${s.n}`), el("h2", {}, qText(s)), options(s, false, check), voiceBox(s, s.voicePrompt), n.bar);
     check();
   } else if (s.type === "story") {
     const n = nav(true, "I'm done with the story");
     const canSpeak = "speechSynthesis" in window;
     const listen = el("button", { class: "btn ghost", onclick: () => {
       if (speechSynthesis.speaking) { speechSynthesis.cancel(); listen.textContent = "Listen"; return; }
-      const u = new SpeechSynthesisUtterance(HELEN.map(([t, p]) => (t ? t + ". " : "") + p).join(" ") + " " + RULES);
+      const u = new SpeechSynthesisUtterance(PERSONAS[who()].story.map(([t, p]) => (t ? t + ". " : "") + p).join(" ") + " " + rulesFor(who()));
       u.rate = 0.95; u.onend = () => { listen.textContent = "Listen"; };
       speechSynthesis.speak(u); listen.textContent = "Stop";
     } }, "Listen");
+    const pick = el("div", { class: "row", role: "group", "aria-label": "Choose whose day to read" });
+    Object.entries(PERSONAS).forEach(([name, p]) => pick.append(el("button", { class: "btn" + (who() === name ? "" : " ghost"), "aria-pressed": String(who() === name), onclick: () => { stopAll(); answers.persona = name; render(); } }, `${name}, ${p.age}`)));
     body = el("div", { class: "stack" },
       el("p", { class: "qnum" }, "A TUESDAY IN APRIL 2027"),
-      el("h2", {}, "Helen's day"),
-      el("p", { class: "hint" }, "A made-up member. The technology is what's plausible by spring 2027. Listen with the text on screen, or read it yourself."),
+      el("h2", {}, `${who()}'s day`),
+      el("p", { class: "hint" }, "Two made-up members. Pick the day closer to your own. The technology is what's plausible by spring 2027. Listen with the text on screen, or read it yourself."),
+      pick,
       canSpeak ? el("div", { class: "row" }, listen, el("span", { class: "hint" }, "Ganesh's recorded narration replaces this voice.")) : null,
       storyNode(), n.bar);
   } else {
@@ -308,11 +341,14 @@ function render() {
       if (a.choice) parts.push(Array.isArray(a.choice) ? a.choice.join(", ") : a.choice);
       if (a.seconds) parts.push(`Voice answer, ${fmt(a.seconds)}`);
       if (a.text) parts.push(`"${a.text}"`);
-      dl.append(el("dt", {}, `${x.n}. ${x.q}`), el("dd", {}, parts.join(" · ") || "Skipped"));
+      dl.append(el("dt", {}, `${x.n}. ${qText(x)}`), el("dd", {}, parts.join(" · ") || "Skipped"));
     });
+    dl.append(el("dt", {}, "Story read"), el("dd", {}, `${who()}'s day`));
+    const b = suggestedBooth();
     body = el("div", { class: "stack" },
       el("h1", {}, "Thank you."),
-      el("p", { class: "lead" }, "Your answers help us plan November 18. We'll let you know which part of the day fits you best."),
+      el("p", { class: "lead" }, "Your answers help us plan November 18."),
+      b != null ? el("p", { class: "note" }, "Based on your answers, this looks like your best fit. ", el("strong", {}, BOOTHS[b]), " Ganesh's team confirms booths before the day.") : null,
       el("p", { class: "note" }, "Prototype: nothing was sent. In the real survey, answers go to Ganesh's team only."),
       el("details", {}, el("summary", {}, "See what we captured"), dl),
       el("div", {}, el("button", { class: "btn ghost", onclick: () => { for (const k in answers) delete answers[k]; i = 0; render(); } }, "Start over")));
